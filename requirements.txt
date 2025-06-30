@@ -1,0 +1,8 @@
+Flask
+requests 
+google-generativeai 
+PyPDF2 
+sentence-transformers 
+chromadb 
+mysql-connector-python 
+APScheduler 
