@@ -12,6 +12,7 @@ from typing import List, Any, Optional, Dict # Re-added for type hinting
 from datetime import datetime, timedelta # Import for session management
 from apscheduler.schedulers.background import BackgroundScheduler # For background tasks
 from apscheduler.triggers.interval import IntervalTrigger # For scheduling intervals
+from flask_cors import CORS # Import Flask-CORS
 
 # Import services and config
 from src import whatsapp_service
@@ -22,6 +23,7 @@ from src import embedding_service
 from src import mysql_service # Import MySQL service
 
 app = Flask(__name__)
+CORS(app) # Enable CORS for all origins and all routes. Consider restricting in production!
 
 # === Configuration & Service Initialization ===
 # Load config values

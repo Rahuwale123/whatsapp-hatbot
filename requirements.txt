@@ -6,3 +6,4 @@ sentence-transformers
 chromadb 
 mysql-connector-python 
 APScheduler 
+Flask-CORS 
