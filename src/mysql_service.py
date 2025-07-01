@@ -7,7 +7,7 @@ and inserting new user records.
 
 import mysql.connector
 from mysql.connector import Error
-from typing import Optional
+from typing import Optional, Any
 
 # Global database connection instance
 _db_connection: Optional[mysql.connector.connection.MySQLConnection] = None
@@ -155,4 +155,29 @@ def update_customer_chat_info(wa_id: str, intent: Optional[str] = None, purpose:
         print(f"[❌ ERROR] Error updating chat info for customer {wa_id}: {e}")
         return False
     finally:
-        cursor.close() 
+        cursor.close()
+
+def get_all_customers() -> list[dict[str, Any]]:
+    """
+    Retrieves all customer records from the 'customers' table.
+
+    Returns:
+        A list of dictionaries, where each dictionary represents a customer record.
+        Returns an empty list if no customers are found or an error occurs.
+    """
+    if not _db_connection or not _db_connection.is_connected():
+        print("[❌ ERROR] MySQL connection not initialized or disconnected. Cannot retrieve all customers.")
+        return []
+
+    customers_list: list[dict[str, Any]] = []
+    cursor = _db_connection.cursor(dictionary=True) # Return results as dictionaries
+    query = "SELECT id, company_number, wa_id, display_name, intent, purpose, created_at FROM customers"
+    try:
+        cursor.execute(query)
+        results = cursor.fetchall()
+        customers_list = list(results)
+    except Error as e:
+        print(f"[❌ ERROR] Error retrieving all customers: {e}")
+    finally:
+        cursor.close()
+    return customers_list 

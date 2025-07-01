@@ -265,5 +265,26 @@ def whatsapp_webhook() -> tuple[str, int]:
             traceback.print_exc()
         return "ok", 200
 
+@app.route("/get_all_customers_data", methods=["GET"])
+def get_all_customers_data() -> tuple[dict, int]:
+    """
+    API endpoint to retrieve all customer data from the MySQL database.
+
+    Returns:
+        A JSON response containing a list of all customer records.
+        Returns an error message if retrieval fails.
+    """
+    try:
+        customers = mysql_service.get_all_customers()
+        # Convert datetime objects to string for JSON serialization
+        for customer in customers:
+            if 'created_at' in customer and isinstance(customer['created_at'], datetime):
+                customer['created_at'] = customer['created_at'].isoformat()
+        print(f"[API] Retrieved {len(customers)} customer records.")
+        return jsonify({"status": "success", "data": customers}), 200
+    except Exception as e:
+        print(f"[❌ ERROR] Failed to retrieve all customer data via API: {e}")
+        return jsonify({"status": "error", "message": "Failed to retrieve customer data."}), 500
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
