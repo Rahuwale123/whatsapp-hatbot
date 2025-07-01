@@ -27,13 +27,14 @@ def initialize_whatsapp_config(access_token: str, phone_number_id: str) -> None:
     _PHONE_NUMBER_ID = phone_number_id
     print("[WhatsApp] WhatsApp API configuration initialized.")
 
-def send_whatsapp_message(to: str, message_body: str) -> bool:
+def send_whatsapp_message(to: str, message_body: str, button_data: Optional[Dict[str, str]] = None) -> bool:
     """
-    Sends a text message to a specified WhatsApp recipient.
+    Sends a text message or an interactive message with a button to a specified WhatsApp recipient.
 
     Args:
         to: The recipient's WhatsApp ID (mobile number).
-        message_body: The text content of the message to send.
+        message_body: The text content of the message.
+        button_data: Optional dictionary containing button details (type, label, value).
 
     Returns:
         True if the message was sent successfully, False otherwise.
@@ -45,13 +46,77 @@ def send_whatsapp_message(to: str, message_body: str) -> bool:
         "Authorization": f"Bearer {_ACCESS_TOKEN}",
         "Content-Type": "application/json",
     }
-    payload: Dict[str, Any] = {
-        "messaging_product": "whatsapp",
-        "to": to,
-        "type": "text",
-        "text": {"body": message_body},
-    }
+    
+    payload: Dict[str, Any]
+
+    if button_data:
+        button_type = button_data.get("type")
+        button_label = button_data.get("label")
+        button_value = button_data.get("value")
+
+        # Truncate button_label if it exceeds 20 characters
+        if button_label and len(button_label) > 20:
+            button_label = button_label[:20]
+
+        if button_type == "phone_number":
+            # For phone number, use tel: scheme in URL
+            action_url = f"tel:{button_value}"
+        elif button_type == "url":
+            # Ensure URL has http(s):// or mailto: prefix for proper opening
+            if not (button_value.startswith("http://") or button_value.startswith("https://") or button_value.startswith("mailto:")):
+                action_url = f"https://{button_value}"
+            else:
+                action_url = button_value
+        else:
+            # Fallback to text message if button_data is malformed
+            print(f"[❌ ERROR] Invalid button type '{button_type}' received. Sending as text message.")
+            payload = {
+                "messaging_product": "whatsapp",
+                "to": to,
+                "type": "text",
+                "text": {"body": message_body},
+            }
+            action_url = "" # Reset to avoid linting warnings
+
+        if button_type in ["phone_number", "url"] and action_url:
+            payload = {
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": to,
+                "type": "interactive",
+                "interactive": {
+                    "type": "cta_url",
+                    "body": {
+                        "text": message_body
+                    },
+                    "action": {
+                        "name": "cta_url",
+                        "parameters": {
+                            "display_text": button_label,
+                            "url": action_url
+                        }
+                    }
+                }
+            }
+        else:
+            # Fallback to text message if button construction failed
+            payload = {
+                "messaging_product": "whatsapp",
+                "to": to,
+                "type": "text",
+                "text": {"body": message_body},
+            }
+
+    else: # No button data, send a regular text message
+        payload = {
+            "messaging_product": "whatsapp",
+            "to": to,
+            "type": "text",
+            "text": {"body": message_body},
+        }
+
     try:
+        # Ensure 'json' parameter is used for requests.post
         response = requests.post(url, headers=headers, json=payload)
         response.raise_for_status()  # Raise an HTTPError for bad responses (4xx or 5xx)
         print("[WhatsApp] Message sent successfully.")

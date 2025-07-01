@@ -230,11 +230,13 @@ def whatsapp_webhook() -> tuple[str, int]:
                     pure_json_text = gemini_response_text.strip()
                 
                 final_response_text: str = ""
+                button_data: Optional[Dict[str, str]] = None # Initialize button_data
+
                 try:
                     gemini_response_json: dict = json.loads(pure_json_text)
                     final_response_text = gemini_response_json.get("response_text", "")
-                    action_type: str = gemini_response_json.get("action", "none")
-                    print(f"[Gemini] Parsed JSON response. Action: {action_type}")
+                    button_data = gemini_response_json.get("button") # Extract button data
+                    print(f"[Gemini] Parsed JSON response. Button Data: {button_data}")
 
                 except json.JSONDecodeError as e:
                     print(f"[❌ ERROR] Failed to decode JSON from Gemini: {e}")
@@ -251,8 +253,8 @@ def whatsapp_webhook() -> tuple[str, int]:
                 user_session["history"] = chat_context_list
                 conversation_history[user_number] = user_session
 
-                # Send the reply back via WhatsApp API
-                whatsapp_service.send_whatsapp_message(user_number, final_response_text)
+                # Send the reply back via WhatsApp API, passing button_data
+                whatsapp_service.send_whatsapp_message(user_number, final_response_text, button_data)
             else:
                 print(f"[INFO] Received non-text message type: {msg.get('type')}")
         except KeyError as e:

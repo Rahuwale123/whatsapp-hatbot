@@ -16,10 +16,12 @@ venv/
 .DS_Store
 Thumbs.db
 
-
 # Logs and data
 *.log
 *.sqlite3
 
 # Temporary files
-*.tmp 
+*.tmp
+
+# Chroma DB
+chroma_db/

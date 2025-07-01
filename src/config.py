@@ -8,8 +8,8 @@ secure configuration management system instead of hardcoding sensitive data.
 
 # WhatsApp Business API Configuration
 VERIFY_TOKEN: str = "rahul_gemini" # Token for webhook verification with Meta
-ACCESS_TOKEN: str = "EAAPcBsYBmwQBOZBwAKMemEUVXJEg576P0GUtnyu2fMeG3LstHxIZB3hUqy1s0e6AUe3ZBvD2u3iPcUjtVuPsNZBPQvcf5SJQPSCkwoWUDZAIdiueYRBSv2peUHCJZAuAAL18u6WBszlRZAGK54ZAqDUxzI6s7ecqM2Ug43SSZCHbAxtXsOFir3ZCJGs4ZBNaHH2ruOR2gZDZD" # Your WhatsApp Business API access token
-PHONE_NUMBER_ID: str = "678403788693327" # Your WhatsApp Business Account's Phone Number ID
+ACCESS_TOKEN: str = "EAAmfZALxbAXgBO3R9wse4ZCC1ZC5akxiyZADZCvoWWGTXjX0ZAMTo0vvmZBUfwA4PBVUIorQD4FVWMbsJMolPWPvHGvopxlZAob6KeI3XgACQZBhVL38T8jAZCSGwdgqKpUwfbxGG4stFvyRZBpLSyrcRCQjHWrHfuAr3O5wLqhZCkI1sfeixEE5MZCMSY9sV0ZBdK901iDntGzjS2dGZAFAldGxqgsMO0KJMi4DCSYUGMasHS8lgZDZD" # Your WhatsApp Business API access token
+PHONE_NUMBER_ID: str = "746492331872816" # Your WhatsApp Business Account's Phone Number ID
 
 # Google Gemini API Configuration
 GEMINI_API_KEY: str = "AIzaSyD9-Q11L-ZxBSs6mXbdyFtCJkHkO3__0so" # Your Google Gemini API key

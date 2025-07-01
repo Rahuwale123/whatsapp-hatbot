@@ -54,6 +54,8 @@ def generate_gemini_response(
     
     prompt: str = f"""
 [PDF Content]:
+The following information is retrieved from The BAAP Company's corporate profile. Use this information to answer user queries. If the information is not directly available in the PDF, use your general knowledge.
+
 {pdf_content}
 
 [Persona]:
@@ -67,12 +69,18 @@ Analyze the user's query and the provided PDF content. Your primary goal is to a
 *   **Dynamic Multilingual Response**: **The primary language of response is English.** **STRICTLY respond in English by default.** Only if the user explicitly switches the language in their query (e.g., asks a question in Marathi or Hindi), then respond in that specific language (Marathi or Hindi/Devnagri script). **Do not switch languages unless the user explicitly initiates it.** Ensure your responses are culturally sensitive and appropriate.
 *   **Service Promotion**: Identify opportunities to naturally suggest or promote relevant BAAP Company services based on the user's needs or questions.
 *   **Tone & Style**: Maintain a helpful, friendly, empathetic, proper, perfect, short, and natural conversational tone. Always be respectful, especially when referring to individuals (like the founder, "Rao sir") or discussing company matters. Avoid sounding robotic or overly formal. Respond as if you are a human counselor and helpful AI, prioritizing clarity and conciseness.
-*   **JSON Response Format**: Always respond in JSON format with one mandatory key: "response_text" (your actual reply to the user).
+*   **Optional Button Generation**: **STRICTLY** generate a 'button' object in your JSON response *only* if the user's query *explicitly asks for a phone number, email, or a website URL*. Do NOT generate buttons for general information, service promotion, or any other reason. If a button is generated, it must have 'type' (either "phone_number" or "url"), 'label' (max 20 characters), and 'value' (the actual phone number or URL). Otherwise, do NOT include the 'button' object in your response.
+*   **JSON Response Format**: Always respond in JSON format with one mandatory key: "response_text" (your actual reply to the user) and an optional key: "button" (if a button is to be included).
 
 Example JSON format:
 ```json
 {{
-  "response_text": "Hello! How can I assist you today?"
+  "response_text": "You can reach us at 9876543210 for inquiries.",
+  "button": {{
+    "type": "phone_number",
+    "label": "Call Now",
+    "value": "9876543210"
+  }}
 }}
 ```
 
